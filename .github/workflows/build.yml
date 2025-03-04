@@ -1,0 +1,27 @@
+on:
+  push:
+  pull_request:
+
+jobs:
+  compliance-check:
+    runs-on: ["ubuntu-latest"]
+    name: Compliance check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: check license compatibility
+        uses: EmbarkStudios/cargo-deny-action@3f4a782664881cf5725d0ffd23969fcce89fd868 # v1 uses v0.14.19
+        with:
+          log-level: warn
+          command: check license
+          arguments: --all-features
+          manifest-path: ./Cargo.toml
+
+      - name: check for CVEs via rusts security advisory db
+        uses: EmbarkStudios/cargo-deny-action@3f4a782664881cf5725d0ffd23969fcce89fd868 # v1 uses v0.14.19
+        with:
+          log-level: warn
+          command: check advisories
+          command-arguments: -s
+          arguments: --all-features
+          manifest-path: ./Cargo.toml
